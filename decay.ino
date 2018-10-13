@@ -1,13 +1,12 @@
 #include "decay.h"
-
-
+#include "Arduino.h"
 void Decay::modeSetup()
 {
     setallPixels(0,0,0);
     //init all animations so we dont have to deal with nulls in the first run.
     for (int i = 0; i < PIXELCOUNT; i++)
     {
-        pixelAnimation[i] = new Dead(m_pixel,true);
+        pixelAnimation[i] = new AnimSolid(m_pixel,i);
         pixelAnimation[i]->animationSetup();
     }
 }
@@ -20,24 +19,31 @@ void Decay::run()
         pixelAnimation[animationIndex]->step();
         if(!pixelAnimation[animationIndex]->isRunning())
         {
+        //    Serial.print("resetting animation ");
+          //  Serial.println(animationIndex);
+            delete pixelAnimation[animationIndex];
             //time to replace. and setup.
             m_pixel->setPixelColor(animationIndex,0,0,0);
-            long chance = 0;//random(chanceTotal);
+            int chance = random(0,chanceTotal);
             for (int chanceIndex = 0; chanceIndex < chanceOptions; chanceIndex++)
             {
-                delete pixelAnimation[animationIndex];
+              //  Serial.print("Using mode ");
                 if(chance < chances[chanceIndex]){
                     if(chanceIndex == 0){
-                        pixelAnimation[animationIndex] = new Dead(m_pixel);
+                        Serial.println("Dead");
+                        pixelAnimation[animationIndex] = new Dead(m_pixel,animationIndex);
                     }
                     else if(chanceIndex == 1){
-                        pixelAnimation[animationIndex] = new AnimSolid(m_pixel);
+            //            Serial.println("Solid");
+                        pixelAnimation[animationIndex] = new AnimSolid(m_pixel,animationIndex);
                     }
                     else if(chanceIndex == 2){
-                        pixelAnimation[animationIndex] = new Fizzle(m_pixel);
+            //            Serial.println("fizzle");
+                        pixelAnimation[animationIndex] = new Fizzle(m_pixel,animationIndex);
                     } 
                     else if(chanceIndex == 3){
-                        pixelAnimation[animationIndex] = new AnimPulse(m_pixel);
+         //               Serial.println("pulse");
+                        pixelAnimation[animationIndex] = new AnimPulse(m_pixel,animationIndex);
                     }
                     pixelAnimation[animationIndex]->animationSetup();
 
@@ -62,17 +68,19 @@ void Animation::step()
 }
 
 
-void Dead::animationStep(){}
+void Dead::animationStep(){m_pixel->setPixelColor(m_pixelId, 0,0,0);}
 void Dead::animationSetup(){}
 
-void AnimSolid::animationStep(){}
+void AnimSolid::animationStep(){
+    m_pixel->setPixelColor(m_pixelId, 30,0,0);
+}
 void AnimSolid::animationSetup(){} 
 
 void Fizzle::animationStep(){}
-void Fizzle::animationSetup(){}
+void Fizzle::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,60,30);}
 
 void AnimPulse::animationStep(){}
-void AnimPulse::animationSetup(){}
+void AnimPulse::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,0,30);}
 
 void OnOff::animationStep(){}
-void OnOff::animationSetup(){}
+void OnOff::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,30,0);}

@@ -12,8 +12,8 @@ public:
 private:
     Animation* pixelAnimation[PIXELCOUNT];
 
-    static const int chances[5]{
-        100, // dead
+    const int chances[5]{
+        50, // dead
         5,  // solid 
         10, // fizzle
         3,  // pulse
@@ -21,30 +21,33 @@ private:
     };
 
     // DONT FORGET TO UPDATE IF THE TABLE CHANGES.
-    static const int chanceOptions = sizeof (chances) / sizeof(int);
-    static const long chanceTotal = 138;
+    const int chanceOptions = sizeof (chances) / sizeof(int);
+    const long chanceTotal = 83;
 };
 
 class Animation 
 {
 public:
-    Animation(PixelPtr p, uint16_t d) : pixel(p), duration(d) {}
+    Animation(PixelPtr p, uint8_t pixelId, uint16_t d) : m_pixel(p), m_pixelId(pixelId), duration(d) {}
+    virtual ~Animation(){}
     virtual void animationSetup() = 0;
     void step();
     bool isRunning() {return running;}
 protected:
+    void setallPixels(uint8_t r, uint8_t g, uint8_t b);
     virtual void animationStep() = 0;
-    uint8_t pixelId;
+    uint8_t m_pixelId;
     uint16_t frame = 0;
     uint16_t duration;
     bool running = true;
-    PixelPtr pixel;
+    PixelPtr m_pixel;
 };
 
 class Dead : public Animation 
 {
     public:
-    Dead(PixelPtr p,bool init = false) : Animation(p,init?0:100){}
+    Dead(PixelPtr p,int pixelId, bool init = false) : Animation(p, pixelId, init?0:random(80,150)){}
+    ~Dead(){}
     void animationStep();
     void animationSetup();
 };
@@ -52,7 +55,8 @@ class Dead : public Animation
 class AnimSolid : public Animation
 {
     public:
-    AnimSolid(PixelPtr p) : Animation(p,100){}
+    AnimSolid(PixelPtr p,int pixelId) : Animation(p, pixelId, random(50,500)){}
+    ~AnimSolid(){}
     void animationStep();
     void animationSetup();
 };
@@ -60,7 +64,8 @@ class AnimSolid : public Animation
 class Fizzle : public Animation
 {
     public:
-    Fizzle(PixelPtr p ): Animation(p,40){}
+    Fizzle(PixelPtr p ,int pixelId): Animation(p, pixelId, random(40,300)){}
+    ~Fizzle(){}
     void animationStep();
     void animationSetup();
 };
@@ -68,7 +73,8 @@ class Fizzle : public Animation
 class AnimPulse : public Animation
 {
     public:
-    AnimPulse(PixelPtr p) : Animation(p,30){}
+    AnimPulse(PixelPtr p,int pixelId) : Animation(p, pixelId,random(30,700)){}
+    ~AnimPulse(){}
     void animationStep();
     void animationSetup();
 };
@@ -76,7 +82,8 @@ class AnimPulse : public Animation
 class OnOff : public Animation
 {
     public:
-    OnOff(PixelPtr p) : Animation(p,30){}
+    OnOff(PixelPtr p,int pixelId) : Animation(p, pixelId,random(200,300)){}
+    ~OnOff(){}
     void animationStep();
     void animationSetup();
 };
