@@ -11,8 +11,9 @@ public:
     void run();
 private:
     Animation* pixelAnimation[PIXELCOUNT];
+    static const int chanceOptions = 5;
 
-    const int chances[5]{
+    const int chances[chanceOptions]{
         50, // dead
         5,  // solid 
         10, // fizzle
@@ -21,8 +22,8 @@ private:
     };
 
     // DONT FORGET TO UPDATE IF THE TABLE CHANGES.
-    const int chanceOptions = sizeof (chances) / sizeof(int);
-    const long chanceTotal = 83;
+
+    long chanceTotal=87;
 };
 
 class Animation 
@@ -47,7 +48,7 @@ class Dead : public Animation
 {
     public:
     Dead(PixelPtr p,int pixelId, bool init = false) : Animation(p, pixelId, init?0:random(80,150)){}
-    ~Dead(){}
+    virtual ~Dead(){}
     void animationStep();
     void animationSetup();
 };
@@ -56,7 +57,7 @@ class AnimSolid : public Animation
 {
     public:
     AnimSolid(PixelPtr p,int pixelId) : Animation(p, pixelId, random(50,500)){}
-    ~AnimSolid(){}
+    virtual ~AnimSolid(){}
     void animationStep();
     void animationSetup();
 };
@@ -65,7 +66,7 @@ class Fizzle : public Animation
 {
     public:
     Fizzle(PixelPtr p ,int pixelId): Animation(p, pixelId, random(40,300)){}
-    ~Fizzle(){}
+    virtual ~Fizzle(){}
     void animationStep();
     void animationSetup();
 };
@@ -74,7 +75,7 @@ class AnimPulse : public Animation
 {
     public:
     AnimPulse(PixelPtr p,int pixelId) : Animation(p, pixelId,random(30,700)){}
-    ~AnimPulse(){}
+    virtual ~AnimPulse(){}
     void animationStep();
     void animationSetup();
 };
@@ -83,7 +84,7 @@ class OnOff : public Animation
 {
     public:
     OnOff(PixelPtr p,int pixelId) : Animation(p, pixelId,random(200,300)){}
-    ~OnOff(){}
+    virtual ~OnOff(){}
     void animationStep();
     void animationSetup();
 };

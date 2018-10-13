@@ -32,10 +32,11 @@ for (int i = 0 ; i < mode ; i ++)
 }
   pixel->begin();
   pixel->show();
-  Serial.begin(38400);
- while (!Serial) {
+  Serial.begin(19200);
+  while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+  Serial.println("reboot");
 #endif
   if(mode == 0)
   {
@@ -72,15 +73,14 @@ for (int i = 0 ; i < mode ; i ++)
   //run specific setup for the mode.
   currentMode->modeSetup();
   delay(100);
-  Serial.print("reboot : mode ");
-  Serial.println(mode);
+ // Serial.print("reboot : mode ");
+ // Serial.println(mode);
 }
 
 void loop() {
   
   //Serial.println("Hello World");
-  delay(10);
+  delay(1);
   currentMode->runMode();
-   //Serial.print("freeMemory()=");
-    //Serial.println(freeMemory());
+
 }

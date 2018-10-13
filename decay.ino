@@ -1,12 +1,13 @@
 #include "decay.h"
 #include "Arduino.h"
+#include "MemoryFree.h"
 void Decay::modeSetup()
 {
     setallPixels(0,0,0);
     //init all animations so we dont have to deal with nulls in the first run.
     for (int i = 0; i < PIXELCOUNT; i++)
     {
-        pixelAnimation[i] = new AnimSolid(m_pixel,i);
+        pixelAnimation[i] = new Dead(m_pixel,i,true);
         pixelAnimation[i]->animationSetup();
     }
 }
@@ -17,20 +18,25 @@ void Decay::run()
     for (int animationIndex = 0; animationIndex < PIXELCOUNT; animationIndex++)
     {
         pixelAnimation[animationIndex]->step();
-        if(!pixelAnimation[animationIndex]->isRunning())
+        if(pixelAnimation[animationIndex]==NULL ||!pixelAnimation[animationIndex]->isRunning())
         {
         //    Serial.print("resetting animation ");
           //  Serial.println(animationIndex);
-            delete pixelAnimation[animationIndex];
+            if(pixelAnimation[animationIndex]!=NULL)
+            {
+                delete pixelAnimation[animationIndex];
+            }
             //time to replace. and setup.
             m_pixel->setPixelColor(animationIndex,0,0,0);
-            int chance = random(0,chanceTotal);
+            int chance = random(0,chanceTotal-1);
             for (int chanceIndex = 0; chanceIndex < chanceOptions; chanceIndex++)
             {
               //  Serial.print("Using mode ");
+                // Serial.print("freeMemory()=");
+                // Serial.println(freeMemory());
                 if(chance < chances[chanceIndex]){
                     if(chanceIndex == 0){
-                        Serial.println("Dead");
+                        //Serial.println("Dead");
                         pixelAnimation[animationIndex] = new Dead(m_pixel,animationIndex);
                     }
                     else if(chanceIndex == 1){
@@ -45,6 +51,13 @@ void Decay::run()
          //               Serial.println("pulse");
                         pixelAnimation[animationIndex] = new AnimPulse(m_pixel,animationIndex);
                     }
+                    else if(chanceIndex == 4){
+         //               Serial.println("pulse");
+                        pixelAnimation[animationIndex] = new OnOff(m_pixel,animationIndex);
+                    }
+                    else {
+                        pixelAnimation[animationIndex] = new Dead(m_pixel,animationIndex);
+                    }
                     pixelAnimation[animationIndex]->animationSetup();
 
                     break;
@@ -54,7 +67,7 @@ void Decay::run()
         }
     } 
     m_pixel->show();
-    delay(5);
+    delay(1);
 }
 
 void Animation::step()
@@ -77,7 +90,7 @@ void AnimSolid::animationStep(){
 void AnimSolid::animationSetup(){} 
 
 void Fizzle::animationStep(){}
-void Fizzle::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,60,30);}
+void Fizzle::animationSetup(){m_pixel->setPixelColor(m_pixelId, 30,30,0);}
 
 void AnimPulse::animationStep(){}
 void AnimPulse::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,0,30);}
