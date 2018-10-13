@@ -8,7 +8,7 @@ class Spinner : public Mode
 {
   private:
   static const int loopTrails = 3;
-  static const Colour loopColour = {20,20,40};
+  static constexpr Colour loopColour = {20,20,40};
   static const int  loopLevels = PIXELCOUNT / loopTrails;
   Colour looptable[loopLevels] ={};
   int spinStep =0;

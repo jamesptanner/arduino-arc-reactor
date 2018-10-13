@@ -40,7 +40,7 @@ protected:
   }
   private:
     int delayValue = 0;
-    static const Colour loopColour = {30,30,70};
+    static constexpr Colour loopColour = {30,30,70};
     static const int  loopLevels = PIXELCOUNT*2;
     Colour looptable[loopLevels] ={};
     int steps = loopLevels;
