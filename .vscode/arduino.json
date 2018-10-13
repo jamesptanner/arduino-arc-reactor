@@ -1,0 +1,6 @@
+{
+    "sketch": "arcreactor.ino",
+    "board": "arduino:avr:pro",
+    "configuration": "cpu=16MHzatmega328",
+    "port": "/dev/cu.usbserial-AC01N554"
+}
