@@ -44,18 +44,15 @@ void Decay::run()
                         pixelAnimation[animationIndex] = new AnimSolid(m_pixel,animationIndex);
                     }
                     else if(chanceIndex == 2){
-            //            Serial.println("fizzle");
-                        pixelAnimation[animationIndex] = new Fizzle(m_pixel,animationIndex);
-                    } 
-                    else if(chanceIndex == 3){
          //               Serial.println("pulse");
                         pixelAnimation[animationIndex] = new AnimPulse(m_pixel,animationIndex);
                     }
-                    else if(chanceIndex == 4){
+                    else if(chanceIndex == 3){
          //               Serial.println("pulse");
                         pixelAnimation[animationIndex] = new OnOff(m_pixel,animationIndex);
                     }
                     else {
+                        //Serial.println("onoff")
                         pixelAnimation[animationIndex] = new Dead(m_pixel,animationIndex);
                     }
                     pixelAnimation[animationIndex]->animationSetup();
@@ -81,19 +78,36 @@ void Animation::step()
 }
 
 
-void Dead::animationStep(){m_pixel->setPixelColor(m_pixelId, 0,0,0);}
 void Dead::animationSetup(){}
+void Dead::animationStep(){m_pixel->setPixelColor(m_pixelId, 0,0,0);}
 
+void AnimSolid::animationSetup(){} 
 void AnimSolid::animationStep(){
     m_pixel->setPixelColor(m_pixelId, 30,0,0);
 }
-void AnimSolid::animationSetup(){} 
 
-void Fizzle::animationStep(){}
-void Fizzle::animationSetup(){m_pixel->setPixelColor(m_pixelId, 30,30,0);}
+void OnOff::animationSetup(){}
+void OnOff::animationStep(){
+    if(frame % random(0,23) == 0)
+    {
+        m_pixel->setPixelColor(m_pixelId,random()%2 ? 40:0,0,0);
+    }
+}
 
-void AnimPulse::animationStep(){}
-void AnimPulse::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,0,30);}
+void AnimPulse::animationSetup(){}
+void AnimPulse::animationStep(){
+        uint8_t currentFrame = frame % pulseDuration;
 
-void OnOff::animationStep(){}
-void OnOff::animationSetup(){m_pixel->setPixelColor(m_pixelId, 0,30,0);}
+    Colour sendColour = {};
+    uint8_t effectiveFrame = forwards ? currentFrame :  pulseDuration - currentFrame;
+    sendColour.r = (int)(((float) maxColour.r / (float) pulseDuration) * (float) effectiveFrame);
+    sendColour.g = (int)(((float) maxColour.g / (float) pulseDuration) * (float) effectiveFrame);
+    sendColour.b = (int)(((float) maxColour.b / (float) pulseDuration) * (float) effectiveFrame);
+
+    m_pixel->setPixelColor(m_pixelId,sendColour.r,sendColour.g,sendColour.b);
+    if( currentFrame == pulseDuration - 1)  
+    {
+        forwards = !forwards;
+    }
+}
+

@@ -18,12 +18,11 @@ void setup() {
   //initilaize the pixels
 
   //increment the counter and loop around if needed
-  //mode = EEPROM.read(0);
-  //EEPROM.write(0,(mode+1)%modeCount);
-  mode = 7;
+  mode = EEPROM.read(0);
+  EEPROM.write(0,(mode+1)%modeCount);
 
   PixelPtr pixel = new Adafruit_NeoPixel(PIXELCOUNT,PIXELPIN);
-#define DEBUG
+
 #ifdef DEBUG
 for (int i = 0 ; i < mode ; i ++)
 {
@@ -42,15 +41,15 @@ for (int i = 0 ; i < mode ; i ++)
   {
     currentMode = new Static(pixel);
   }
-  else if (mode == 1)
+  else if (mode == 2)
   {
     currentMode = new Spinner(pixel);
   }
-  else if (mode == 2)
+  else if (mode == 3)
   {
     currentMode = new VarSpeedSpinner(pixel);
   }
-  else if (mode == 3)
+  else if (mode == 6)
   {
     currentMode = new SlowPulse(pixel);
   }
@@ -62,7 +61,7 @@ for (int i = 0 ; i < mode ; i ++)
   {
     currentMode = new VariableSpeedPulse(pixel);
   }
-  else if (mode == 6)
+  else if (mode == 1)
   {
     currentMode = new SlowSpinner(pixel);
   }
